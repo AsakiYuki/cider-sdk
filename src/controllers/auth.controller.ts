@@ -1,5 +1,25 @@
 import type { AuthLinkOptions, AuthRequestBody, AuthToken } from "../models/types.js"
-import type { CiderHttpClient } from "../services/http-client.js"
+import { CiderHttpClient } from "../services/http-client.js"
+import type { CiderOptions } from "../models/common.js"
+
+export interface RequestAuthTokenOptions extends Pick<CiderOptions, "baseUrl" | "fetch"> {
+	signal?: AbortSignal
+}
+
+/** Requests a Cider API token directly. This endpoint does not require an existing token. */
+export async function requestAuthToken(
+	input: AuthRequestBody,
+	options: RequestAuthTokenOptions = {},
+): Promise<AuthToken> {
+	const client = new CiderHttpClient(options)
+	const response = await client.request<AuthToken>("POST", "/api/v2/auth/request", {
+		body: input,
+		signal: options.signal,
+		auth: false,
+		timeout: 125_000,
+	})
+	return response.data
+}
 
 /** Builds the same-device Cider consent deep link. */
 export function createAuthLink(options: AuthLinkOptions): string {

@@ -1,0 +1,11 @@
+/** Backward-compatible model barrel; prefer importing a category module directly. */
+export * from "./enums.js"
+export * from "./common.js"
+export * from "./playback.js"
+export * from "./queue.js"
+export * from "./audio.js"
+export * from "./library.js"
+export * from "./playlists.js"
+export * from "./lyrics.js"
+export * from "./apple-music.js"
+export * from "./events.js"

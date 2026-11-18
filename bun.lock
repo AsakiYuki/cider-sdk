@@ -3,7 +3,7 @@
 	"configVersion": 1,
 	"workspaces": {
 		"": {
-			"name": "cider.js",
+			"name": "cider-sdk",
 			"devDependencies": {
 				"@types/node": "^26.6.6",
 			},

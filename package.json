@@ -1,5 +1,5 @@
 {
-	"name": "cider.js",
+	"name": "cider-sdk",
 	"version": "1.0.0",
 	"description": "Control Cider from your own apps and scripts: read what's playing, browse the library, fetch lyrics, run playback, and more, over a local API on your machine.",
 	"keywords": [
@@ -7,13 +7,13 @@
 		"applemusic",
 		"music"
 	],
-	"homepage": "https://github.com/AsakiYuki/cider.js#readme",
+	"homepage": "https://github.com/AsakiYuki/cider-sdk#readme",
 	"bugs": {
-		"url": "https://github.com/AsakiYuki/cider.js/issues"
+		"url": "https://github.com/AsakiYuki/cider-sdk/issues"
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/AsakiYuki/cider.js.git"
+		"url": "git+https://github.com/AsakiYuki/cider-sdk.git"
 	},
 	"license": "MIT",
 	"author": "Asaki Yuki",

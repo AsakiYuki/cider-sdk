@@ -7,9 +7,9 @@ import { PlaylistController as PlaylistClient } from "../controllers/playlist.co
 import { PluginController as PluginClient } from "../controllers/plugin.controller.js"
 import { QueueController as QueueClient } from "../controllers/queue.controller.js"
 import { EventsController } from "../controllers/events.controller.js"
+import { AuthController } from "../controllers/auth.controller.js"
 import { CiderHttpClient } from "../services/http-client.js"
-import type { AccountTokens, AuthToken, CiderOptions, ClientInfo, ConfigValue } from "../models/common.js"
-import type { CiderScope } from "../models/enums.js"
+import type { AccountTokens, AuthRequestBody, CiderOptions, ClientInfo, ConfigValue } from "../models/common.js"
 
 /** Public SDK facade: exposes one service object for each Cider API area. */
 export class Cider extends CiderHttpClient {
@@ -22,6 +22,7 @@ export class Cider extends CiderHttpClient {
 	readonly lyrics: LyricsClient
 	readonly plugins: PluginClient
 	readonly events: EventsController
+	readonly auth: AuthController
 
 	constructor(options: CiderOptions = {}) {
 		super(options)
@@ -34,17 +35,11 @@ export class Cider extends CiderHttpClient {
 		this.lyrics = new LyricsClient(this)
 		this.plugins = new PluginClient(this)
 		this.events = new EventsController(this.baseUrl)
+		this.auth = new AuthController(this)
 	}
 
-	async requestToken(input: { app_name: string; scopes: CiderScope[]; app_image?: string }, signal?: AbortSignal) {
-		const response = await this.request<AuthToken>("POST", "/api/v2/auth/request", {
-			body: input,
-			signal,
-			auth: false,
-			timeout: 125_000,
-		})
-		this.setToken(response.data.token)
-		return response
+	requestToken(input: AuthRequestBody, signal?: AbortSignal) {
+		return this.auth.requestToken(input, signal)
 	}
 	getClientInfo(signal?: AbortSignal) {
 		return this.get<ClientInfo>("/api/v2/client/info", undefined, signal)

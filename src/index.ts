@@ -1,6 +1,7 @@
 export { Cider, CiderClient, createCider, createCiderClient } from "./views/cider-client.js"
 export { CiderHttpClient } from "./services/http-client.js"
 export { EventsController } from "./controllers/events.controller.js"
+export { AuthController, createAuthLink } from "./controllers/auth.controller.js"
 export {
 	AppleMusicClient,
 	AudioClient,

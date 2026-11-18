@@ -12,6 +12,16 @@ export interface AuthToken {
 	token: string
 	scopes: CiderScope[]
 }
+export interface AuthRequestBody {
+	app_name: string
+	scopes: CiderScope[]
+	app_image?: string
+}
+export interface AuthLinkOptions {
+	appName: string
+	scopes: CiderScope[]
+	appImage?: string
+}
 export interface AccountTokens {
 	developerToken: string
 	userToken: string

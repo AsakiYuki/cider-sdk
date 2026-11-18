@@ -1,0 +1,14 @@
+# Development source and local tests
+src/
+test/
+AGENTS.md
+
+# TypeScript build configuration
+tsconfig*.json
+
+# Local package manager state
+bun.lock
+
+# Generated debug artifacts
+*.tsbuildinfo
+*.log

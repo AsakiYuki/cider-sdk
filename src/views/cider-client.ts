@@ -58,6 +58,12 @@ export class Cider extends CiderHttpClient {
 	}
 }
 
+export class CiderClient extends Cider {}
+
 export function createCider(options?: CiderOptions): Cider {
 	return new Cider(options)
+}
+
+export function createCiderClient(options?: CiderOptions): CiderClient {
+	return new CiderClient(options)
 }

@@ -1,4 +1,7 @@
 import { BaseController } from "./base.controller.js"
+import type { Pagination } from "../models/common.js"
+import type { MusicKitType } from "../models/enums.js"
+import type { QueuePosition, QueueSnapshot, SmartOptimizerStatus } from "../models/queue.js"
 
 export class QueueController extends BaseController {
 	list(pagination: Pagination = {}, signal?: AbortSignal) {

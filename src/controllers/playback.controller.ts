@@ -1,6 +1,15 @@
 import { BaseController } from "./base.controller.js"
-import type { EnabledStatus, NowPlayingTrack, PlaybackRate, PlaybackSnapshot, PlaybackTime } from "../models/playback.js"
-import type { MusicKitType, PlaybackState, RepeatMode } from "../models/enums.js"
+import type {
+	AudioQuality,
+	EnabledStatus,
+	NowPlayingTrack,
+	PlaybackRate,
+	PlaybackSnapshot,
+	PlaybackStatus,
+	PlaybackTime,
+	RepeatStatus,
+} from "../models/playback.js"
+import type { MusicKitType, RepeatMode } from "../models/enums.js"
 
 export class PlaybackController extends BaseController {
 	get(signal?: AbortSignal) {
@@ -10,18 +19,13 @@ export class PlaybackController extends BaseController {
 		return super.getApi<NowPlayingTrack | null>("/api/v2/playback/now-playing", undefined, signal)
 	}
 	state(signal?: AbortSignal) {
-		return super.getApi<{ state: PlaybackState }>("/api/v2/playback/state", undefined, signal)
+		return super.getApi<PlaybackStatus>("/api/v2/playback/state", undefined, signal)
 	}
 	time(signal?: AbortSignal) {
 		return super.getApi<PlaybackTime>("/api/v2/playback/time", undefined, signal)
 	}
 	audioQuality(signal?: AbortSignal) {
-		return super.getApi<{
-			flavor: string
-			flavorLabel: string
-			deviceAudioConfig: { channelCount: number; sampleRate: number; supportsAtmos: boolean; supportedCodecs: string[] }
-			localPlayback: Record<string, unknown> | null
-		}>("/api/v2/playback/audio-quality", undefined, signal)
+		return super.getApi<AudioQuality>("/api/v2/playback/audio-quality", undefined, signal)
 	}
 	play(signal?: AbortSignal) {
 		return this.postApi("/api/v2/playback/play", undefined, signal)
@@ -66,7 +70,7 @@ export class PlaybackController extends BaseController {
 		return this.patchApi("/api/v2/playback/rate", { rate }, signal)
 	}
 	repeat(signal?: AbortSignal) {
-		return super.getApi<{ mode: RepeatMode }>("/api/v2/playback/repeat", undefined, signal)
+		return super.getApi<RepeatStatus>("/api/v2/playback/repeat", undefined, signal)
 	}
 	setRepeat(mode: RepeatMode, signal?: AbortSignal) {
 		return this.putApi("/api/v2/playback/repeat", { mode }, signal)

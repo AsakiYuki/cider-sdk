@@ -1,6 +1,10 @@
-import type { Artwork, TrackSummary } from "./common.js"
+import type { Artwork } from "./common.js"
 
-export interface LibraryTrack extends TrackSummary {}
+export interface NowPlayingStatus {
+	inLibrary: boolean
+	/** `-1` dislike, `0` none, `1` love. */
+	rating: -1 | 0 | 1
+}
 export interface PlaylistSummary {
 	id: string
 	name: string
@@ -22,19 +26,20 @@ export interface LibraryArtist {
 	name: string
 	artwork?: Artwork
 }
-export interface PlaylistTrack extends TrackSummary {
+/** Library song rows. Note the duration field is `durationMs`, not the catalog's `durationInMillis`. */
+export interface PlaylistTrack {
+	id: string
+	name: string
 	artistName: string
 	albumName: string
 	durationMs: number
 	trackNumber?: number
+	artwork?: Artwork
+	[key: string]: unknown
 }
 export type RecentlyAddedItem =
 	| ({ type: "library-albums" } & LibraryAlbum)
 	| ({ type: "library-playlists" } & PlaylistSummary)
 export interface LibraryPage<T> {
 	items: T[]
-}
-export interface PaginatedResponse<T> {
-	data: LibraryPage<T>
-	meta: { offset: number; limit: number; total: number }
 }

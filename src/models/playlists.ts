@@ -4,6 +4,7 @@ export interface PlaylistWriteResult {
 	trackCount: number
 	snapshotAt: string
 }
+/** Create and metadata-only updates capture no track pre-image, so they return the id alone. */
 export interface PlaylistCreateResult {
 	id: string
 }

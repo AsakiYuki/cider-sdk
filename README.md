@@ -76,7 +76,7 @@ const playlists = await cider.library.playlists({ limit: 50 })
 console.log(playlists.data.items, playlists.meta)
 ```
 
-Successful API calls return Cider's response envelope, usually `{ data }`; paginated endpoints also include `meta`. API errors throw `CiderApiError` with `status`, `code`, and `message` fields.
+Successful API calls return Cider's response envelope, usually `{ data }`; paginated endpoints also include `meta`.
 
 The client accepts a custom API address, fetch implementation, and request timeout:
 
@@ -87,6 +87,26 @@ const cider = new Cider({
 	timeout: 30_000,
 })
 ```
+
+Node 18 or newer is required, since the client uses the global `fetch`. On older runtimes, pass your own via `options.fetch`.
+
+## Errors
+
+API errors throw `CiderApiError` with `status`, `code`, `message`, and `retryAfter` fields. A request that exceeds its timeout rejects with `CiderTimeoutError`; a request you abort yourself rejects with your own abort reason, so the two cases stay distinguishable:
+
+```ts
+import { CiderApiError, CiderTimeoutError } from "cider-sdk"
+
+try {
+	await cider.playback.pause()
+} catch (error) {
+	if (error instanceof CiderTimeoutError) console.error("Cider did not answer in time")
+	else if (error instanceof CiderApiError) console.error(error.code, error.status, error.message)
+	else throw error
+}
+```
+
+Endpoints gated on a user dialog carry a longer timeout than the 30s default, matching the window Cider gives the user: 125s for `auth.requestToken`, 185s for `plugins.install`.
 
 ## Realtime playback events
 
@@ -121,7 +141,7 @@ cider.events.disconnect()
 - `cider.playlists` — create and edit playlists, manage tracks, and use playlist history.
 - `cider.amapi` — search and read Apple Music catalog resources through Cider.
 - `cider.lyrics` — fetch lyrics, variations, translations, and language options.
-- `cider.plugins` — request a plugin installation; Cider still asks the user to approve it.
+- `cider.plugins` — request a plugin installation; Cider still asks the user to approve it. `createPluginInstallLink(zipUrl)` builds the equivalent on-device `cider://install-plugin` link, which needs no token.
 - `cider.auth` — request a token or create an auth link.
 - `cider.events` — connect to playback broadcasts.
 
@@ -132,6 +152,7 @@ The package also exports each controller, model, enum-like value, `CiderClient` 
 ```sh
 npm install
 npm run typecheck
+npm test
 npm run build
 ```
 

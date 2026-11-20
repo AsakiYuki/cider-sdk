@@ -48,6 +48,15 @@ export interface CiderResponse<T> {
 export interface CiderErrorBody {
 	error: { code: string; message: string }
 }
+/** Thrown when a request exceeds its timeout budget, as opposed to being aborted by the caller. */
+export class CiderTimeoutError extends Error {
+	readonly timeout: number
+	constructor(timeout: number) {
+		super(`Cider API request timed out after ${timeout}ms`)
+		this.name = "CiderTimeoutError"
+		this.timeout = timeout
+	}
+}
 export class CiderApiError extends Error {
 	readonly status: number
 	readonly code: string

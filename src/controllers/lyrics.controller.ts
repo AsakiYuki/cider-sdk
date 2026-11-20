@@ -4,10 +4,10 @@ import type { LyricsProvider } from "../models/enums.js"
 
 export class LyricsController extends BaseController {
 	current(query: { words?: boolean; ttml?: boolean } = {}, signal?: AbortSignal) {
-		return this.client.request<Lyrics>("GET", "/api/v2/lyrics/current", { query, signal, timeout: 60_000 })
+		return this.requestApi<Lyrics>("GET", "/api/v2/lyrics/current", { query, signal, timeout: 60_000 })
 	}
 	get(id: string, query: { provider?: LyricsProvider; words?: boolean; ttml?: boolean } = {}, signal?: AbortSignal) {
-		return this.client.request<Lyrics>("GET", `/api/v2/lyrics/${this.id(id)}`, { query, signal, timeout: 60_000 })
+		return this.requestApi<Lyrics>("GET", `/api/v2/lyrics/${this.id(id)}`, { query, signal, timeout: 60_000 })
 	}
 	variations(id: string, signal?: AbortSignal) {
 		return this.getApi<CommunityLyricVariations>(`/api/v2/lyrics/${this.id(id)}/variations`, undefined, signal)

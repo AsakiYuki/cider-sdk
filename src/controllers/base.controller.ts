@@ -1,8 +1,12 @@
 import type { CiderHttpClient } from "../services/http-client.js"
-import type { Query } from "../models/common.js"
+import type { CiderRequestOptions, Query } from "../models/common.js"
 
 export abstract class BaseController {
 	constructor(protected readonly client: CiderHttpClient) {}
+	/** Escape hatch for endpoints needing a non-default timeout, e.g. ones gated on a user dialog. */
+	protected requestApi<T = unknown>(method: string, path: string, options?: CiderRequestOptions) {
+		return this.client.request<T>(method, path, options)
+	}
 	protected getApi<T>(path: string, query?: Query, signal?: AbortSignal) {
 		return this.client.get<T>(path, query, signal)
 	}

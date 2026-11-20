@@ -1,5 +1,6 @@
 import {
 	CiderApiError,
+	CiderTimeoutError,
 	type CiderOptions,
 	type CiderRequestOptions,
 	type CiderResponse,
@@ -16,7 +17,11 @@ export class CiderHttpClient {
 	constructor(options: CiderOptions = {}) {
 		this.baseUrl = (options.baseUrl ?? "http://127.0.0.1:10767").replace(/\/+$/, "")
 		this.token = options.token
-		this.fetcher = options.fetch ?? globalThis.fetch
+		if (typeof (options.fetch ?? globalThis.fetch) !== "function") {
+			throw new TypeError("No fetch implementation available. Use Node 18+, or pass one as `options.fetch`.")
+		}
+		// Bind the global: browsers reject `fetch` invoked as a method of anything but Window.
+		this.fetcher = options.fetch ?? globalThis.fetch.bind(globalThis)
 		this.timeout = options.timeout ?? 30_000
 	}
 
@@ -28,18 +33,17 @@ export class CiderHttpClient {
 	}
 
 	async request<T>(method: string, path: string, options: CiderRequestOptions = {}): Promise<CiderResponse<T>> {
+		// Guard here rather than leaving it to the fetch implementation, which may be injected.
+		if (options.signal?.aborted) throw options.signal.reason
 		const url = new URL(`${this.baseUrl}${path}`)
 		for (const [key, value] of Object.entries(options.query ?? {})) {
 			if (value !== undefined && value !== null) url.searchParams.set(key, String(value))
 		}
+		const timeout = options.timeout ?? this.timeout
 		const controller = new AbortController()
-		const timeoutId = setTimeout(
-			() => controller.abort(new Error("Cider API request timed out")),
-			options.timeout ?? this.timeout,
-		)
+		const timeoutId = setTimeout(() => controller.abort(new CiderTimeoutError(timeout)), timeout)
 		const abort = () => controller.abort(options.signal?.reason)
 		options.signal?.addEventListener("abort", abort, { once: true })
-		if (options.signal?.aborted) abort()
 		try {
 			const response = await this.fetcher(url, {
 				method,

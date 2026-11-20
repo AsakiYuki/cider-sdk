@@ -1,14 +1,18 @@
 import { BaseController } from "./base.controller.js"
-import type { LibraryAlbum, LibraryArtist, LibraryPage, PlaylistSummary, PlaylistTrack, RecentlyAddedItem } from "../models/library.js"
+import type {
+	LibraryAlbum,
+	LibraryArtist,
+	LibraryPage,
+	NowPlayingStatus,
+	PlaylistSummary,
+	PlaylistTrack,
+	RecentlyAddedItem,
+} from "../models/library.js"
 import type { Pagination } from "../models/common.js"
 
 export class LibraryController extends BaseController {
 	nowPlayingStatus(signal?: AbortSignal) {
-		return this.getApi<{ inLibrary: boolean; rating: -1 | 0 | 1 }>(
-			"/api/v2/library/now-playing/status",
-			undefined,
-			signal,
-		)
+		return this.getApi<NowPlayingStatus>("/api/v2/library/now-playing/status", undefined, signal)
 	}
 	addNowPlaying(signal?: AbortSignal) {
 		return this.postApi("/api/v2/library/now-playing/add", undefined, signal)

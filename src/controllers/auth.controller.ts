@@ -1,9 +1,18 @@
-import type { AuthLinkOptions, AuthRequestBody, AuthToken } from "../models/types.js"
+import type { AuthLinkOptions, AuthRequestBody, AuthToken, CiderOptions } from "../models/common.js"
 import { CiderHttpClient } from "../services/http-client.js"
-import type { CiderOptions } from "../models/common.js"
 
 export interface RequestAuthTokenOptions extends Pick<CiderOptions, "baseUrl" | "fetch"> {
 	signal?: AbortSignal
+}
+
+/** Rejects consent requests Cider would answer with 400 INVALID_REQUEST, without the round trip. */
+function assertConsentRequest(appName: string, scopes: readonly unknown[]): void {
+	if (!appName?.trim() || appName.length > 64) {
+		throw new RangeError("appName must contain 1 to 64 characters")
+	}
+	if (scopes.length === 0) {
+		throw new RangeError("At least one API scope is required")
+	}
 }
 
 /** Requests a Cider API token directly. This endpoint does not require an existing token. */
@@ -11,6 +20,7 @@ export async function requestAuthToken(
 	input: AuthRequestBody,
 	options: RequestAuthTokenOptions = {},
 ): Promise<AuthToken> {
+	assertConsentRequest(input.app_name, input.scopes)
 	const client = new CiderHttpClient(options)
 	const response = await client.request<AuthToken>("POST", "/api/v2/auth/request", {
 		body: input,
@@ -23,13 +33,7 @@ export async function requestAuthToken(
 
 /** Builds the same-device Cider consent deep link. */
 export function createAuthLink(options: AuthLinkOptions): string {
-	if (!options.appName.trim() || options.appName.length > 64) {
-		throw new RangeError("appName must contain 1 to 64 characters")
-	}
-	if (options.scopes.length === 0) {
-		throw new RangeError("At least one API scope is required")
-	}
-
+	assertConsentRequest(options.appName, options.scopes)
 	const query = new URLSearchParams({
 		"app-name": options.appName,
 		scopes: options.scopes.join(","),
@@ -47,6 +51,7 @@ export class AuthController {
 	}
 
 	async requestToken(input: AuthRequestBody, signal?: AbortSignal) {
+		assertConsentRequest(input.app_name, input.scopes)
 		const response = await this.client.request<AuthToken>("POST", "/api/v2/auth/request", {
 			body: input,
 			signal,
